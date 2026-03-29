@@ -1,0 +1,96 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <a href="/invoices/new" class="btn btn-primary">+ Add Invoice</a>
+</div>
+
+<!-- Summary Cards -->
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Due Today</div>
+    <div class="card-count"><%= stats.dueToday.count %></div>
+    <div class="card-amount">$<%= stats.dueToday.total.toFixed(2) %></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Due This Week</div>
+    <div class="card-count"><%= stats.dueThisWeek.count %></div>
+    <div class="card-amount">$<%= stats.dueThisWeek.total.toFixed(2) %></div>
+  </div>
+
+  <div class="card <%= stats.overdue.count > 0 ? 'card-overdue' : '' %>">
+    <div class="card-label">Overdue</div>
+    <div class="card-count"><%= stats.overdue.count %></div>
+    <div class="card-amount">$<%= stats.overdue.total.toFixed(2) %></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Paid This Month</div>
+    <div class="card-count"><%= stats.paidThisMonth.count %></div>
+    <div class="card-amount">$<%= stats.paidThisMonth.total.toFixed(2) %></div>
+  </div>
+</div>
+
+<!-- Invoice Table -->
+<% if (invoices.length === 0) { %>
+  <div class="table-container">
+    <div class="empty-state">
+      <p>No invoices yet. Add your first invoice to get started.</p>
+      <a href="/invoices/new" class="btn btn-primary">Add Invoice</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Contractor</th>
+          <th>Invoice #</th>
+          <th>Amount</th>
+          <th>Invoice Date</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th>Days</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invoices.forEach(inv => { %>
+          <%
+            const today2 = new Date(); today2.setHours(0,0,0,0);
+            const due2 = new Date(inv.due_date); due2.setHours(0,0,0,0);
+            const diff = Math.floor((due2 - today2) / 86400000);
+            let daysLabel;
+            if (diff === 0) daysLabel = 'Due today';
+            else if (diff > 0) daysLabel = 'In ' + diff + ' day' + (diff !== 1 ? 's' : '');
+            else daysLabel = Math.abs(diff) + ' day' + (Math.abs(diff) !== 1 ? 's' : '') + ' overdue';
+          %>
+          <tr>
+            <td><strong><%= inv.contractor_name %></strong></td>
+            <td><%= inv.invoice_number || '—' %></td>
+            <td>$<%= inv.amount.toFixed(2) %></td>
+            <td><%= inv.invoice_date %></td>
+            <td><%= inv.due_date %></td>
+            <td>
+              <span class="badge badge-<%= inv.status %>"><%= inv.status === 'due-soon' ? 'Due Soon' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1) %></span>
+            </td>
+            <td style="color: <%= inv.status === 'overdue' ? '#EF4444' : '#6B7280' %>; font-size: 13px;"><%= daysLabel %></td>
+            <td>
+              <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                <a href="/invoices/<%= inv.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                <% if (inv.status !== 'paid') { %>
+                  <form method="POST" action="/invoices/<%= inv.id %>/mark-paid" style="display: inline;">
+                    <button type="submit" class="btn btn-primary btn-sm">Mark Paid</button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>
