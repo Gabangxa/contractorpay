@@ -1,0 +1,96 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>Edit Invoice</h1>
+  <a href="/invoices" class="btn btn-secondary">Back to Invoices</a>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="/invoices/<%= invoice.id %>">
+    <div class="form-group">
+      <label for="contractor_id">Contractor <span style="color: #EF4444;">*</span></label>
+      <select id="contractor_id" name="contractor_id" required>
+        <option value="">Select a contractor</option>
+        <% contractors.forEach(c => { %>
+          <option value="<%= c.id %>" <%= invoice.contractor_id === c.id ? 'selected' : '' %>><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="invoice_number">Invoice Number <span style="color: #9CA3AF; font-weight: 400;">(optional)</span></label>
+      <input
+        type="text"
+        id="invoice_number"
+        name="invoice_number"
+        value="<%= invoice.invoice_number || '' %>"
+        placeholder="e.g. INV-2024-001"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Amount ($) <span style="color: #EF4444;">*</span></label>
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        required
+        min="0.01"
+        step="0.01"
+        value="<%= invoice.amount %>"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="invoice_date">Invoice Date <span style="color: #EF4444;">*</span></label>
+      <input
+        type="date"
+        id="invoice_date"
+        name="invoice_date"
+        required
+        value="<%= invoice.invoice_date %>"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="due_date">Due Date <span style="color: #EF4444;">*</span></label>
+      <input
+        type="date"
+        id="due_date"
+        name="due_date"
+        required
+        value="<%= invoice.due_date %>"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notes <span style="color: #9CA3AF; font-weight: 400;">(optional)</span></label>
+      <textarea
+        id="notes"
+        name="notes"
+        placeholder="Any notes about this invoice..."
+      ><%= invoice.notes || '' %></textarea>
+    </div>
+
+    <% if (invoice.status === 'paid') { %>
+      <div class="alert alert-success" style="margin-bottom: 20px;">
+        This invoice was marked as paid on <%= invoice.paid_at ? new Date(invoice.paid_at).toLocaleDateString() : 'unknown date' %>.
+      </div>
+    <% } %>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="/invoices" class="btn btn-secondary">Cancel</a>
+      <% if (invoice.status !== 'paid') { %>
+        <form method="POST" action="/invoices/<%= invoice.id %>/mark-paid" style="display: inline;">
+          <button type="submit" class="btn btn-primary">Mark as Paid</button>
+        </form>
+      <% } %>
+      <form method="POST" action="/invoices/<%= invoice.id %>/delete" style="display: inline;" onsubmit="return confirm('Delete this invoice? This cannot be undone.');">
+        <button type="submit" class="btn btn-danger">Delete Invoice</button>
+      </form>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>
