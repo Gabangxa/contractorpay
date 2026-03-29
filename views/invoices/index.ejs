@@ -1,0 +1,80 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>Invoices</h1>
+  <a href="/invoices/new" class="btn btn-primary">+ Add Invoice</a>
+</div>
+
+<!-- Filter Tabs -->
+<div class="tabs">
+  <a href="/invoices" class="tab <%= filter === 'all' ? 'active' : '' %>">All</a>
+  <a href="/invoices?status=pending" class="tab <%= filter === 'pending' ? 'active' : '' %>">Pending</a>
+  <a href="/invoices?status=due-soon" class="tab <%= filter === 'due-soon' ? 'active' : '' %>">Due Soon</a>
+  <a href="/invoices?status=overdue" class="tab <%= filter === 'overdue' ? 'active' : '' %>">Overdue</a>
+  <a href="/invoices?status=paid" class="tab <%= filter === 'paid' ? 'active' : '' %>">Paid</a>
+</div>
+
+<% if (invoices.length === 0) { %>
+  <div class="table-container">
+    <div class="empty-state">
+      <% if (filter !== 'all') { %>
+        <p>No invoices with status "<%= filter %>".</p>
+        <a href="/invoices" class="btn btn-secondary">Show all</a>
+      <% } else { %>
+        <p>No invoices yet. Add your first invoice to get started.</p>
+        <a href="/invoices/new" class="btn btn-primary">Add Invoice</a>
+      <% } %>
+    </div>
+  </div>
+<% } else { %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Contractor</th>
+          <th>Invoice #</th>
+          <th>Amount</th>
+          <th>Invoice Date</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th>Days</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invoices.forEach(inv => { %>
+          <tr>
+            <td><strong><%= inv.contractor_name %></strong></td>
+            <td><%= inv.invoice_number || '—' %></td>
+            <td>$<%= inv.amount.toFixed(2) %></td>
+            <td><%= inv.invoice_date %></td>
+            <td><%= inv.due_date %></td>
+            <td>
+              <span class="badge badge-<%= inv.status %>">
+                <%= inv.status === 'due-soon' ? 'Due Soon' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1) %>
+              </span>
+            </td>
+            <td style="color: <%= inv.status === 'overdue' ? '#EF4444' : '#6B7280' %>; font-size: 13px;">
+              <%= inv.status === 'paid' ? (inv.paid_at ? 'Paid' : '—') : inv.daysLabel %>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                <a href="/invoices/<%= inv.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                <% if (inv.status !== 'paid') { %>
+                  <form method="POST" action="/invoices/<%= inv.id %>/mark-paid" style="display: inline;">
+                    <button type="submit" class="btn btn-primary btn-sm">Mark Paid</button>
+                  </form>
+                <% } %>
+                <form method="POST" action="/invoices/<%= inv.id %>/delete" style="display: inline;" onsubmit="return confirm('Delete this invoice? This cannot be undone.');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>
