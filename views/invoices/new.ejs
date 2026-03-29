@@ -1,0 +1,114 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>Add Invoice</h1>
+  <a href="/invoices" class="btn btn-secondary">Back to Invoices</a>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="/invoices">
+    <div class="form-group">
+      <label for="contractor_id">Contractor <span style="color: #EF4444;">*</span></label>
+      <select id="contractor_id" name="contractor_id" required>
+        <option value="">Select a contractor</option>
+        <% contractors.forEach(c => { %>
+          <option value="<%= c.id %>"><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="invoice_number">Invoice Number <span style="color: #9CA3AF; font-weight: 400;">(optional)</span></label>
+      <input
+        type="text"
+        id="invoice_number"
+        name="invoice_number"
+        placeholder="e.g. INV-2024-001"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Amount ($) <span style="color: #EF4444;">*</span></label>
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        required
+        min="0.01"
+        step="0.01"
+        placeholder="0.00"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="invoice_date">Invoice Date <span style="color: #EF4444;">*</span></label>
+      <input
+        type="date"
+        id="invoice_date"
+        name="invoice_date"
+        required
+        value="<%= new Date().toISOString().split('T')[0] %>"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="due_date">Due Date <span style="color: #EF4444;">*</span></label>
+      <input
+        type="date"
+        id="due_date"
+        name="due_date"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notes <span style="color: #9CA3AF; font-weight: 400;">(optional)</span></label>
+      <textarea
+        id="notes"
+        name="notes"
+        placeholder="Any notes about this invoice..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <div class="checkbox-group">
+        <input type="checkbox" id="send_confirmation" name="send_confirmation">
+        <label for="send_confirmation" style="margin-bottom: 0;">Send confirmation email to contractor</label>
+      </div>
+      <p style="font-size: 12px; color: #9CA3AF; margin-top: 4px; margin-left: 24px;">Only sends if contractor has an email address on file</p>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button type="submit" class="btn btn-primary">Create Invoice</button>
+      <a href="/invoices" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Auto-fill due date based on contractor's default terms
+  const contractorSelect = document.getElementById('contractor_id');
+  const invoiceDateInput = document.getElementById('invoice_date');
+  const dueDateInput = document.getElementById('due_date');
+
+  const contractorTerms = {
+    <% contractors.forEach((c, i) => { %>
+      '<%= c.id %>': <%= c.default_terms %><%= i < contractors.length - 1 ? ',' : '' %>
+    <% }) %>
+  };
+
+  function updateDueDate() {
+    const contractorId = contractorSelect.value;
+    const invoiceDate = invoiceDateInput.value;
+    if (contractorId && invoiceDate && contractorTerms[contractorId]) {
+      const date = new Date(invoiceDate);
+      date.setDate(date.getDate() + contractorTerms[contractorId]);
+      dueDateInput.value = date.toISOString().split('T')[0];
+    }
+  }
+
+  contractorSelect.addEventListener('change', updateDueDate);
+  invoiceDateInput.addEventListener('change', updateDueDate);
+</script>
+
+<%- include('../partials/footer') %>
