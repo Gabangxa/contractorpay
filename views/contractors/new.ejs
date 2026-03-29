@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>Add Contractor</h1>
+  <a href="/contractors" class="btn btn-secondary">Back to Contractors</a>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="/contractors">
+    <div class="form-group">
+      <label for="name">Name <span style="color: #EF4444;">*</span></label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required
+        placeholder="e.g. Acme Design Studio"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email <span style="color: #9CA3AF; font-weight: 400;">(optional)</span></label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="contractor@example.com"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="default_terms">Default Payment Terms</label>
+      <select id="default_terms" name="default_terms">
+        <option value="15">Net 15</option>
+        <option value="30" selected>Net 30</option>
+        <option value="45">Net 45</option>
+        <option value="60">Net 60</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button type="submit" class="btn btn-primary">Add Contractor</button>
+      <a href="/contractors" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>
