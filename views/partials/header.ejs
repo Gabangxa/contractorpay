@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' — ContractorPay' : 'ContractorPay' %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">ContractorPay</a>
+
+  <% if (currentUser) { %>
+    <div class="nav-links">
+      <a href="/" class="<%= typeof title !== 'undefined' && title === 'Dashboard' ? 'active' : '' %>">Dashboard</a>
+      <a href="/contractors" class="<%= typeof title !== 'undefined' && title.includes('Contractor') ? 'active' : '' %>">Contractors</a>
+      <a href="/invoices" class="<%= typeof title !== 'undefined' && title.includes('Invoice') ? 'active' : '' %>">Invoices</a>
+    </div>
+    <div class="nav-user">
+      <span><%= currentUser.name %></span>
+      <a href="/logout" class="btn btn-secondary btn-sm">Logout</a>
+    </div>
+  <% } %>
+</nav>
+
+<main class="main">
+
+<% if (success && success.length > 0) { %>
+  <% success.forEach(msg => { %>
+    <div class="alert alert-success"><%= msg %></div>
+  <% }) %>
+<% } %>
+
+<% if (error && error.length > 0) { %>
+  <% error.forEach(msg => { %>
+    <div class="alert alert-error"><%= msg %></div>
+  <% }) %>
+<% } %>
