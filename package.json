@@ -1,0 +1,18 @@
+{
+  "name": "contractorpay",
+  "version": "0.1.0",
+  "description": "Payer-native contractor invoice tracker with automated reminders",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^9.4.3",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.18.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.12"
+  }
+}
