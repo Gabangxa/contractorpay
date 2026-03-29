@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>Contractors</h1>
+  <a href="/contractors/new" class="btn btn-primary">+ Add Contractor</a>
+</div>
+
+<% if (contractors.length === 0) { %>
+  <div class="table-container">
+    <div class="empty-state">
+      <p>No contractors yet. Add your first contractor to get started.</p>
+      <a href="/contractors/new" class="btn btn-primary">Add Contractor</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Payment Terms</th>
+          <th>Outstanding Invoices</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% contractors.forEach(c => { %>
+          <tr>
+            <td><strong><%= c.name %></strong></td>
+            <td><%= c.email || '—' %></td>
+            <td>Net <%= c.default_terms %></td>
+            <td>
+              <% if (c.outstanding_count > 0) { %>
+                <span class="badge badge-due-soon"><%= c.outstanding_count %> invoice<%= c.outstanding_count !== 1 ? 's' : '' %></span>
+              <% } else { %>
+                <span style="color: #9CA3AF; font-size: 13px;">None</span>
+              <% } %>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <a href="/contractors/<%= c.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="POST" action="/contractors/<%= c.id %>/delete" onsubmit="return confirm('Delete <%= c.name %>? This cannot be undone.');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>
